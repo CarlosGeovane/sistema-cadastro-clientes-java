@@ -1,5 +1,8 @@
+package service;
+
 import java.util.ArrayList;
 import java.util.List;
+import model.Cliente;
 
 public class ClienteService {
     private List<Cliente> clientes = new ArrayList<>();
@@ -12,8 +15,7 @@ public class ClienteService {
     public void listarClientes() {
         if (clientes.isEmpty()) {
             System.out.println("Nenhum cliente cadastrado.");
-        }
-        else {
+        } else {
             for (Cliente c : clientes) {
                 System.out.println(c);
             }
@@ -22,13 +24,15 @@ public class ClienteService {
 
     public void buscarClientes(String nome) {
         boolean encontrado = false;
+
         for (Cliente c : clientes) {
             if (c.getNome().equalsIgnoreCase(nome)) {
-                System.out.println("Cliente encontrado: ");
+                System.out.println("Cliente encontrado:");
                 System.out.println(c);
                 encontrado = true;
             }
         }
+
         if (!encontrado) {
             System.out.println("Cliente não encontrado.");
         }
@@ -36,6 +40,7 @@ public class ClienteService {
 
     public void removerClientes(String nome) {
         Cliente clienteRemover = null;
+
         for (Cliente c : clientes) {
             if (c.getNome().equalsIgnoreCase(nome)) {
                 clienteRemover = c;
@@ -46,8 +51,7 @@ public class ClienteService {
         if (clienteRemover != null) {
             clientes.remove(clienteRemover);
             System.out.println("Cliente removido com sucesso!");
-        }
-        else {
+        } else {
             System.out.println("Cliente não encontrado.");
         }
     }
