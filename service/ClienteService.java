@@ -1,20 +1,41 @@
 package service;
 
-import java.util.ArrayList;
-import java.util.List;
+import app.dao.ClienteDAO; // Importamos o DAO que você criou
 import model.Cliente;
+import java.util.List;
 
 public class ClienteService {
-    private List<Cliente> clientes = new ArrayList<>();
+
+    // Em vez de ArrayList, agora usamos o DAO
+    private ClienteDAO clienteDAO = new ClienteDAO();
 
     public void adicionarCliente(Cliente cliente) {
-        clientes.add(cliente);
-        System.out.println("Cliente cadastrado com sucesso!");
+        // Validação de Nome
+        if (cliente.getNome() == null || cliente.getNome().trim().isEmpty()) {
+            System.out.println("❌ Erro: O nome do cliente não pode estar vazio!");
+            return;
+        }
+
+        // Validação básica de E-mail
+        if (!cliente.getEmail().contains("@")) {
+            System.out.println("❌ Erro: E-mail inválido! Deve conter '@'.");
+            return;
+        }
+
+        try {
+            clienteDAO.salvar(cliente);
+            System.out.println("✅ Cliente cadastrado com sucesso no banco de dados!");
+        } catch (RuntimeException e) {
+            System.out.println("❌ Falha técnica: " + e.getMessage());
+        }
     }
 
     public void listarClientes() {
+        // O DAO buscará a lista direto do MySQL
+        List<Cliente> clientes = clienteDAO.listarTodos();
+
         if (clientes.isEmpty()) {
-            System.out.println("Nenhum cliente cadastrado.");
+            System.out.println("Nenhum cliente cadastrado no banco.");
         } else {
             for (Cliente c : clientes) {
                 System.out.println(c);
@@ -23,36 +44,29 @@ public class ClienteService {
     }
 
     public void buscarClientes(String nome) {
-        boolean encontrado = false;
+        // O DAO faz o filtro usando SQL (WHERE nome = ...)
+        List<Cliente> encontrados = clienteDAO.buscarPorNome(nome);
 
-        for (Cliente c : clientes) {
-            if (c.getNome().equalsIgnoreCase(nome)) {
-                System.out.println("Cliente encontrado:");
-                System.out.println(c);
-                encontrado = true;
-            }
-        }
-
-        if (!encontrado) {
+        if (encontrados.isEmpty()) {
             System.out.println("Cliente não encontrado.");
+        } else {
+            System.out.println("Cliente(s) encontrado(s):");
+            encontrados.forEach(System.out::println);
         }
     }
 
     public void removerClientes(String nome) {
-        Cliente clienteRemover = null;
+        // O DAO executa o DELETE no banco
+        boolean removido = clienteDAO.removerPorNome(nome);
 
-        for (Cliente c : clientes) {
-            if (c.getNome().equalsIgnoreCase(nome)) {
-                clienteRemover = c;
-                break;
-            }
-        }
-
-        if (clienteRemover != null) {
-            clientes.remove(clienteRemover);
+        if (removido) {
             System.out.println("Cliente removido com sucesso!");
         } else {
-            System.out.println("Cliente não encontrado.");
+            System.out.println("Cliente não encontrado para remoção.");
         }
+    }
+    // No ClienteService.java
+    public List<Cliente> listarClientesParaTabela() {
+        return clienteDAO.listarTodos();
     }
 }

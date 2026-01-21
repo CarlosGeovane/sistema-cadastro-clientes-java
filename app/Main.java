@@ -4,7 +4,7 @@ import java.util.Scanner;
 import model.Cliente;
 import service.ClienteService;
 
-public class 1Main {
+public class Main {
     public static void main(String[] args) {
         Scanner ler = new Scanner(System.in);
         ClienteService clienteService = new ClienteService();
